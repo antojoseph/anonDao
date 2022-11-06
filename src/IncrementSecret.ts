@@ -81,8 +81,8 @@ export class IncrementSecret extends SmartContract {
 
 }
 
-@method voteonMessage(voterPrivateKey: PrivateKey){
-  const signerPublicKey = voterPrivateKey.toPublicKey();
+  @method upVoteOnMessage(voterPrivateKey: PrivateKey){
+    const signerPublicKey = voterPrivateKey.toPublicKey();
     // Get approved public keys
     const user1 = this.user1.get();
     this.user1.assertEquals(this.user1.get());
@@ -92,18 +92,36 @@ export class IncrementSecret extends SmartContract {
     this.user3.assertEquals(this.user3.get());
     // Assert that signerPublicKey is one of the approved public keys
     signerPublicKey
-    .equals(user1)
-    .or(signerPublicKey.equals(user2))
-    .or(signerPublicKey.equals(user3))
-    .assertEquals(true);
+        .equals(user1)
+        .or(signerPublicKey.equals(user2))
+        .or(signerPublicKey.equals(user3))
+        .assertEquals(true);
 
-  const currentMessage = this.message.get();
-  this.message.assertEquals(this.message.get());
+    this.message.assertEquals(this.message.get());
 
-  const currentVoterCount = this.VoteCount.get();
-  this.VoteCount.assertEquals(this.VoteCount.get());
-  const latestVoteCount = currentVoterCount.add(1);
-  this.VoteCount.set(currentVoterCount.add(1));
+    const currentVoterCount = this.VoteCount.get();
+    this.VoteCount.assertEquals(currentVoterCount);
+
+    let latestVoteCount = currentVoterCount.add(1);
+    this.VoteCount.set(latestVoteCount);
+
+  }
+
+  @method downVoteOnMessage(voterPrivateKey: PrivateKey){
+    const signerPublicKey = voterPrivateKey.toPublicKey();
+    // Get approved public keys
+    const user1 = this.user1.get();
+    this.user1.assertEquals(this.user1.get());
+    const user2 = this.user2.get();
+    this.user2.assertEquals(this.user2.get());
+    const user3 = this.user3.get();
+    this.user3.assertEquals(this.user3.get());
+    // Assert that signerPublicKey is one of the approved public keys
+    signerPublicKey
+        .equals(user1)
+        .or(signerPublicKey.equals(user2))
+        .or(signerPublicKey.equals(user3))
+        .assertEquals(true);
 
   }
 

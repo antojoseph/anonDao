@@ -122,9 +122,22 @@ export const users = {
 
   // ----------------------------------------------------
 
+    console.log("Bob Voting on Message");
+    const txn99 = await Mina.transaction(deployerAccount, () => {
+        zkAppInstance.upVoteOnMessage(users.Bob);
+        zkAppInstance.sign(zkAppPrivateKey);
+    });
+    await txn99.send().wait();
+
+    const num99 = zkAppInstance.VoteCount.get();
+    console.log('VoteCount:', num99.toString());
+
+
+    // ----------------------------------------------------
+
   console.log("SuperBob Voting on Message"); 
   const txn9 = await Mina.transaction(deployerAccount, () => {
-    zkAppInstance.voteonMessage(users.SuperBob);
+    zkAppInstance.downVoteOnMessage(users.SuperBob);
     zkAppInstance.sign(zkAppPrivateKey);
   });
   await txn9.send().wait();
@@ -136,7 +149,7 @@ export const users = {
 
   console.log("MegaBob Voting on Message"); 
   const txn10 = await Mina.transaction(deployerAccount, () => {
-    zkAppInstance.voteonMessage(users.MegaBob);
+    zkAppInstance.upVoteOnMessage(users.MegaBob);
     zkAppInstance.sign(zkAppPrivateKey);
   });
   await txn10.send().wait();
