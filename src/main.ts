@@ -5,9 +5,7 @@ import {
   Field,
   Mina,
   PrivateKey,
-  PublicKey,
   AccountUpdate,
-  Poseidon,
 } from 'snarkyjs';
 
 export const users = {
@@ -38,9 +36,8 @@ export const users = {
   Mina.setActiveInstance(Local);
   const deployerAccount = Local.testAccounts[0].privateKey;
 
-  const salt = Field.random();
 
-  
+
   // ----------------------------------------------------
 
   // create a destination we will deploy the smart contract to
@@ -124,7 +121,7 @@ export const users = {
 
     console.log("Bob Voting on Message");
     const txn99 = await Mina.transaction(deployerAccount, () => {
-        zkAppInstance.upVoteOnMessage(users.Bob);
+        zkAppInstance.voteOnMessage(users.Bob, Field(1));
         zkAppInstance.sign(zkAppPrivateKey);
     });
     await txn99.send().wait();
@@ -137,7 +134,7 @@ export const users = {
 
   console.log("SuperBob Voting on Message"); 
   const txn9 = await Mina.transaction(deployerAccount, () => {
-    zkAppInstance.downVoteOnMessage(users.SuperBob);
+    zkAppInstance.voteOnMessage(users.SuperBob, Field(0));
     zkAppInstance.sign(zkAppPrivateKey);
   });
   await txn9.send().wait();
@@ -149,7 +146,7 @@ export const users = {
 
   console.log("MegaBob Voting on Message"); 
   const txn10 = await Mina.transaction(deployerAccount, () => {
-    zkAppInstance.upVoteOnMessage(users.MegaBob);
+    zkAppInstance.voteOnMessage(users.MegaBob, Field(1));
     zkAppInstance.sign(zkAppPrivateKey);
   });
   await txn10.send().wait();

@@ -5,9 +5,8 @@ import {
   State,
   method,
   DeployArgs,
-  Poseidon,
-  Permissions,
   isReady,
+  Permissions,
   Encoding,
   PrivateKey,
   PublicKey
@@ -81,7 +80,7 @@ export class IncrementSecret extends SmartContract {
 
 }
 
-  @method upVoteOnMessage(voterPrivateKey: PrivateKey){
+  @method voteOnMessage(voterPrivateKey: PrivateKey, voteType: Field){
     const signerPublicKey = voterPrivateKey.toPublicKey();
     // Get approved public keys
     const user1 = this.user1.get();
@@ -102,26 +101,10 @@ export class IncrementSecret extends SmartContract {
     const currentVoterCount = this.VoteCount.get();
     this.VoteCount.assertEquals(currentVoterCount);
 
-    let latestVoteCount = currentVoterCount.add(1);
-    this.VoteCount.set(latestVoteCount);
-
-  }
-
-  @method downVoteOnMessage(voterPrivateKey: PrivateKey){
-    const signerPublicKey = voterPrivateKey.toPublicKey();
-    // Get approved public keys
-    const user1 = this.user1.get();
-    this.user1.assertEquals(this.user1.get());
-    const user2 = this.user2.get();
-    this.user2.assertEquals(this.user2.get());
-    const user3 = this.user3.get();
-    this.user3.assertEquals(this.user3.get());
-    // Assert that signerPublicKey is one of the approved public keys
-    signerPublicKey
-        .equals(user1)
-        .or(signerPublicKey.equals(user2))
-        .or(signerPublicKey.equals(user3))
-        .assertEquals(true);
+    if (voteType.equals(Field(1)).toBoolean()){
+      let latestVoteCount = currentVoterCount.add(1);
+      this.VoteCount.set(latestVoteCount);
+    }
 
   }
 
