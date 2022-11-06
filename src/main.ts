@@ -8,6 +8,7 @@ import {
   PublicKey,
   AccountUpdate,
   Poseidon,
+  Encoding,
 } from 'snarkyjs';
 
 export const users = {
@@ -37,6 +38,7 @@ export const users = {
   const Local = Mina.LocalBlockchain();
   Mina.setActiveInstance(Local);
   const deployerAccount = Local.testAccounts[0].privateKey;
+  const randomAccount = Local.testAccounts[1].privateKey;
 
   const salt = Field.random();
 
@@ -65,64 +67,61 @@ export const users = {
 
 
 
-  console.log("Bob in the group , this will pass"); 
+  console.log("Member of AnonDAO , May post a Proposal"); 
   const txn3 = await Mina.transaction(deployerAccount, () => {
-    zkAppInstance.publishMessage(Field.fromNumber(750),users.Bob);
+    zkAppInstance.publishMessage(Field(Encoding.stringToFields("DAO Proposal 1 ..")[0]),users.Bob);
     zkAppInstance.sign(zkAppPrivateKey);
   });
   await txn3.send().wait();
 
   const num3 = zkAppInstance.message.get();
-  console.log('Message:', num3.toString());
+  console.log('Message:', Encoding.stringFromFields([num3]));
 
   // ----------------------------------------------------
 
-     console.log("SuperBob in the group , this will pass"); 
+     console.log("Member of AnonDAO , May post a Proposal"); 
      const txn6 = await Mina.transaction(deployerAccount, () => {
-       zkAppInstance.publishMessage(Field.fromNumber(850),users.SuperBob);
+       zkAppInstance.publishMessage(Field(Encoding.stringToFields("DAO Proposal 2 ..")[0]),users.SuperBob);
        zkAppInstance.sign(zkAppPrivateKey);
      });
      await txn6.send().wait();
 
-
-
   const num6 = zkAppInstance.message.get();
-  console.log('Message:', num6.toString());
+  console.log('Message:', Encoding.stringFromFields([num6]));
 
    // ----------------------------------------------------
-  console.log("MegaBob is in the group , this will not revert");
-  const txn5 = await Mina.transaction(deployerAccount, () => {
-   zkAppInstance.publishMessage(Field.fromNumber(950),users.MegaBob);
-   zkAppInstance.sign(zkAppPrivateKey);
- });
- try{
-   await txn5.send().wait();
-   const num5 = zkAppInstance.message.get();
-   console.log('Message:', num5.toString());
- }catch(ex){
-   console.log(ex);
- }
+//   console.log("Anon is in the group , May post a Proposal");
+//   const txn5 = await Mina.transaction(deployerAccount, () => {
+//    zkAppInstance.publishMessage(Field.fromNumber(950),users.MegaBob);
+//    zkAppInstance.sign(zkAppPrivateKey);
+//  });
+//  try{
+//    await txn5.send().wait();
+//    const num5 = zkAppInstance.message.get();
+//    console.log('Message:', num5.toString());
+//  }catch(ex){
+//    console.log(ex);
+//  }
 
 
    // ----------------------------------------------------
-
-  console.log("Jack is not in the group , will try update message to 1050; this will revert");
-  console.log("core dump , need better error handling") 
-  // const txn4 = await Mina.transaction(deployerAccount, () => {
-  //   zkAppInstance.publishMessage(Field.fromNumber(1050),users.Jack);
-  //   zkAppInstance.sign(zkAppPrivateKey);
-  // });
-  // try{
-  //   await txn4.send().wait();
-  //   const num4 = zkAppInstance.message.get();
-  //   console.log('state after txn4:', num4.toString());
-  // }catch(ex){
-  //   console.log(ex);
-  // }
+   try{
+  console.log("Anon is not in the DAO ,  this will revert");
+  const txn4 = await Mina.transaction(deployerAccount, () => {
+    zkAppInstance.publishMessage(Field.fromNumber(1050),users.Jack);
+    zkAppInstance.sign(zkAppPrivateKey);
+  });
+ 
+    await txn4.send().wait();
+    const num4 = zkAppInstance.message.get();
+    console.log('state after txn4:', num4.toString());
+  }catch(ex){
+    console.log("Execution reverted, Anon not part of the DAO");
+  }
 
   // ----------------------------------------------------
 
-  console.log("SuperBob Voting on Message"); 
+  console.log("Anon Voting on the Latest Proposal"); 
   const txn9 = await Mina.transaction(deployerAccount, () => {
     zkAppInstance.voteonMessage(users.SuperBob);
     zkAppInstance.sign(zkAppPrivateKey);
@@ -131,10 +130,11 @@ export const users = {
 
   const num9 = zkAppInstance.VoteCount.get();
   console.log('VoteCount:', num9.toString());
+  console.log("Voting ends in 1 hour from the very first Vote");
 
   // ----------------------------------------------------
 
-  console.log("MegaBob Voting on Message"); 
+  console.log("Anon Voting on the Latest Proposal"); 
   const txn10 = await Mina.transaction(deployerAccount, () => {
     zkAppInstance.voteonMessage(users.MegaBob);
     zkAppInstance.sign(zkAppPrivateKey);
@@ -156,6 +156,34 @@ export const users = {
   
     const num11= zkAppInstance.VoteCount.get();
     console.log('Vote Passed, Yaay!:', num11.toString());
+
+
+    // ----------------------------------------------------
+    try{
+    console.log("DAO can mint some tokens "); 
+    const txn12 = await Mina.transaction(randomAccount, () => {
+      zkAppInstance.mintNewTokens(randomAccount.toPublicKey());
+      zkAppInstance.sign(zkAppPrivateKey);
+    });
+    await txn12.send().wait();
+  } catch(ex){
+    console.log("This works on berkley testnet only!");
+  }
+
+      // ----------------------------------------------------
+      try{
+        console.log("DAO can Burn some tokens "); 
+        const txn14 = await Mina.transaction(randomAccount, () => {
+          zkAppInstance.burnTokens(randomAccount.toPublicKey());
+          zkAppInstance.sign(zkAppPrivateKey);
+        });
+        await txn14.send().wait();
+      } catch(ex){
+        console.log("This works on berkley testnet only!");
+      }
+  
+  
+      // ----------------------------------------------------
 
   console.log('Shutting down');
 

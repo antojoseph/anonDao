@@ -10,7 +10,8 @@ import {
   isReady,
   Encoding,
   PrivateKey,
-  PublicKey
+  PublicKey,
+  UInt64
 } from 'snarkyjs';
 
 export { isReady, Field, Encoding };
@@ -102,6 +103,10 @@ export class IncrementSecret extends SmartContract {
 
   const currentVoterCount = this.VoteCount.get();
   this.VoteCount.assertEquals(this.VoteCount.get());
+  // you have 1 hour to cast your vote from the very first vote
+  const now = this.network.timestamp.get();
+  this.network.timestamp.assertBetween(now, now.add(60 * 60 * 1000));
+
   const latestVoteCount = currentVoterCount.add(1);
   this.VoteCount.set(currentVoterCount.add(1));
 
@@ -114,6 +119,21 @@ export class IncrementSecret extends SmartContract {
   this.VoteCount.assertEquals(Field.fromNumber(2));
   this.VoteCount.set(Field.fromNumber(1337));
   }
+
+
+
+  @method mintNewTokens(receiverAddress: PublicKey) {
+        this.experimental.token.mint({
+          address:receiverAddress,
+          amount: 100_000,
+        });
+      }
+  @method burnTokens(addressToDecrease: PublicKey) {
+        this.experimental.token.burn({
+          address: addressToDecrease,
+          amount: 100_000,
+        });
+      }
 
 
 }
