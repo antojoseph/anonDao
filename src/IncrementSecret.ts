@@ -82,7 +82,7 @@ export class IncrementSecret extends SmartContract {
 
 }
 
-@method voteonMessage(voterPrivateKey: PrivateKey){
+@method voteOnMessage(voterPrivateKey: PrivateKey, voteType: Field){
   const signerPublicKey = voterPrivateKey.toPublicKey();
     // Get approved public keys
     const user1 = this.user1.get();
@@ -99,7 +99,7 @@ export class IncrementSecret extends SmartContract {
     .assertEquals(true);
 
   const currentMessage = this.message.get();
-  this.message.assertEquals(this.message.get());
+  this.message.assertEquals(currentMessage);
 
   const currentVoterCount = this.VoteCount.get();
   this.VoteCount.assertEquals(this.VoteCount.get());
@@ -107,8 +107,10 @@ export class IncrementSecret extends SmartContract {
   const now = this.network.timestamp.get();
   this.network.timestamp.assertBetween(now, now.add(60 * 60 * 1000));
 
-  const latestVoteCount = currentVoterCount.add(1);
-  this.VoteCount.set(currentVoterCount.add(1));
+  if (voteType.equals(Field(1)).toBoolean()){
+    const latestVoteCount = currentVoterCount.add(1);
+    this.VoteCount.set(latestVoteCount);
+  }
 
   }
 

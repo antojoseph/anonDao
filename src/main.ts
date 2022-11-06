@@ -40,9 +40,6 @@ export const users = {
   const deployerAccount = Local.testAccounts[0].privateKey;
   const randomAccount = Local.testAccounts[1].privateKey;
 
-  const salt = Field.random();
-
-  
   // ----------------------------------------------------
 
   // create a destination we will deploy the smart contract to
@@ -121,22 +118,34 @@ export const users = {
 
   // ----------------------------------------------------
 
-  console.log("Anon Voting on the Latest Proposal"); 
+  console.log("Anon Voting on the Latest Proposal");
+  const txn99 = await Mina.transaction(deployerAccount, () => {
+    zkAppInstance.voteOnMessage(users.Bob, Field(1));
+    zkAppInstance.sign(zkAppPrivateKey);
+  });
+  await txn99.send().wait();
+
+  const num99 = zkAppInstance.VoteCount.get();
+  console.log('VoteCount:', num99.toString());
+  console.log("Voting ends in 1 hour from the very first Vote");
+
+  // ----------------------------------------------------
+
+  console.log("Anon Voting on the Latest Proposal");
   const txn9 = await Mina.transaction(deployerAccount, () => {
-    zkAppInstance.voteonMessage(users.SuperBob);
+    zkAppInstance.voteOnMessage(users.SuperBob, Field(0));
     zkAppInstance.sign(zkAppPrivateKey);
   });
   await txn9.send().wait();
 
   const num9 = zkAppInstance.VoteCount.get();
   console.log('VoteCount:', num9.toString());
-  console.log("Voting ends in 1 hour from the very first Vote");
 
   // ----------------------------------------------------
 
   console.log("Anon Voting on the Latest Proposal"); 
   const txn10 = await Mina.transaction(deployerAccount, () => {
-    zkAppInstance.voteonMessage(users.MegaBob);
+    zkAppInstance.voteOnMessage(users.MegaBob, Field(1));
     zkAppInstance.sign(zkAppPrivateKey);
   });
   await txn10.send().wait();
