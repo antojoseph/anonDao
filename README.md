@@ -1,24 +1,25 @@
-# Mina zkApp: 02 Private Inputs And Hash Functions
+# Mina zkApp: Anaon Dao Voting
 
 This template uses TypeScript.
+
+## How to setup
+
+```sh
+npm install
+```
 
 ## How to build
 
 ```sh
-npm run build
+npm run build && node build/src/main.js
 ```
 
-## How to run tests
+## Deploy to Berkley testnet
 
 ```sh
-npm run test
-npm run testw # watch mode
-```
-
-## How to run coverage
-
-```sh
-npm run coverage
+zk config
+zk deploy berkley
+npm run build && node build/src/main.js berkley
 ```
 
 ## License
